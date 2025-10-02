@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Password Policy - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Dark Theme CSS with Smooth Hover Animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a; /* Dark main background */
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e4e4; /* Primary text color */
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #121212; /* Dark container background */
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%); /* Dark gradient */
+            color: #ffffff; /* Primary text on dark background */
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        
+        .header h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .nav {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 20px 30px;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav a {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .nav a.logout {
+            background: #dc3545; /* Error red */
+        }
+        
+        .nav a.logout:hover {
+            background: #c82333;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        .content {
+            padding: 40px;
+            background: #121212; /* Dark container background */
+        }
+        
+        .policy-card {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .policy-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .policy-card h2 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .policy-card h2:hover {
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .policy-card h2 .icon {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e4e4e4; /* Primary text */
+            font-size: 1.1rem;
+        }
+        
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #3a3a3a; /* Dark border */
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: #2d2d2d; /* Dark input background */
+            color: #e4e4e4; /* Primary text */
+            cursor: pointer;
+        }
+        
+        .form-group input[type="number"]:hover {
+            border-color: #60a5fa; /* Brand blue for hover */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+        }
+        
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #60a5fa; /* Brand blue for focus */
+            background: #252525; /* Slightly lighter on focus */
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #2d2d2d; /* Dark secondary background */
+            border-radius: 8px;
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-group:hover {
+            background: #252525; /* Slightly lighter on hover */
+            transform: translateY(-1px);
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            accent-color: #60a5fa; /* Brand blue for checkbox */
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            color: #e4e4e4; /* Primary text */
+            font-size: 1rem;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .message:hover {
+            transform: translateY(-2px);
+        }
+        
+        .message.success {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+            border: 1px solid #4ade80;
+        }
+        
+        .message.error {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+            border: 1px solid #f87171;
+        }
+        
+        .policy-info {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #60a5fa; /* Brand blue */
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .policy-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .policy-info h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .policy-info ul {
+            color: #b0b0b0; /* Secondary text */
+            padding-left: 20px;
+        }
+        
+        .policy-info li {
+            margin-bottom: 8px;
+            transition: color 0.2s ease;
+        }
+        
+        .policy-info li:hover {
+            color: #e4e4e4; /* Primary text on hover */
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav a {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Password Policy</h1>
+            <p>Configure security requirements for user passwords</p>
+        </div>
+        
+        <nav class="nav">
+            <a th:href="@{/dashboard}">🏠 Dashboard</a>
+            <a th:href="@{/upload}">📁 Upload File</a>
+            <a th:href="@{/uploads}">📋 View Uploads</a>
+            <a th:href="@{/2fa}">🔐 2FA Settings</a>
+            <a th:href="@{/logout}" class="logout">🚪 Logout</a>
+        </nav>
+        
+        <div class="content">
+            <div class="policy-card">
+                <h2><span class="icon">⚙️</span>Password Policy Configuration</h2>
+                
+                <form th:action="@{/policy}" method="post">
+                    <div class="form-group">
+                        <label for="minLength">Minimum Password Length</label>
+                        <input type="number" id="minLength" name="minLength" th:value="${minLength}" min="6" max="128" placeholder="Enter minimum length (6-128)" />
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="requireUppercase" name="requireUppercase" th:checked="${requireUppercase}"/>
+                        <label for="requireUppercase">Require Uppercase Letters (A-Z)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="requireNumber" name="requireNumber" th:checked="${requireNumber}"/>
+                        <label for="requireNumber">Require Numbers (0-9)</label>
+                    </div>
+                    
+                    <button type="submit" class="btn">💾 Save Policy</button>
+                </form>
+                
+                <div th:if="${message}" class="message success" th:text="${message}"></div>
+            </div>
+            
+            <div class="policy-info">
+                <h3>📋 Current Policy Requirements</h3>
+                <ul>
+                    <li><strong>Minimum Length:</strong> <span th:text="${minLength}">8</span> characters</li>
+                    <li><strong>Uppercase Letters:</strong> <span th:text="${requireUppercase ? 'Required' : 'Not Required'}">Required</span></li>
+                    <li><strong>Numbers:</strong> <span th:text="${requireNumber ? 'Required' : 'Not Required'}">Required</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

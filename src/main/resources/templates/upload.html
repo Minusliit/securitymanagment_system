@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>File Upload - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a; /* Dark main background */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #e4e4e4; /* Primary text color */
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #121212; /* Dark container background */
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%); /* Dark gradient */
+            color: #ffffff; /* Primary text on dark background */
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .left-panel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .left-panel h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            line-height: 1.2;
+            transition: all 0.3s ease;
+        }
+        
+        .left-panel h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .left-panel p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            line-height: 1.6;
+            max-width: 500px;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .security-icon {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .security-icon:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .right-panel {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #2d2d2d; /* Dark secondary background */
+        }
+        
+        .upload-container {
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+            background: #252525; /* Dark card background */
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .upload-container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .upload-header h2 {
+            font-size: 2.2rem;
+            color: #ffffff; /* Primary text */
+            margin-bottom: 8px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-header h2:hover {
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .upload-header p {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 1rem;
+        }
+        
+        .form-container {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #e4e4e4; /* Primary text */
+            font-size: 0.9rem;
+        }
+        
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #3a3a3a; /* Dark border */
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #2d2d2d; /* Dark input background */
+            color: #e4e4e4; /* Primary text */
+            cursor: pointer;
+        }
+        
+        .form-group input[type="text"]::placeholder {
+            color: #808080; /* Muted text for placeholders */
+        }
+        
+        .form-group input[type="text"]:hover {
+            border-color: #60a5fa; /* Brand blue for hover */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+        }
+        
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #60a5fa; /* Brand blue for focus */
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 1px solid #3a3a3a; /* Dark border */
+            border-radius: 4px;
+            background: #2d2d2d; /* Dark input background */
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-display:hover {
+            border-color: #60a5fa; /* Brand blue for hover */
+            background: #252525; /* Slightly lighter on hover */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+        }
+        
+        .file-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .file-text {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 0.9rem;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: #007bff; /* Keep brand blue */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+        }
+        
+        .upload-btn:active {
+            background: #004085;
+            transform: translateY(0);
+        }
+        
+        .message {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .message.success {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+            border-color: #4ade80;
+        }
+        
+        .message.error {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+            border-color: #f87171;
+        }
+        
+        .navigation {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .nav-link {
+            color: #60a5fa; /* Brand blue for links */
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin: 0 10px;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: #93c5fd; /* Lighter blue on hover */
+            text-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #60a5fa;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .file-info {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .file-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .file-info h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .file-info h3 .icon {
+            margin-right: 6px;
+            font-size: 1rem;
+        }
+        
+        .file-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .file-info li {
+            padding: 3px 0;
+            color: #b0b0b0; /* Secondary text */
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+        }
+        
+        .file-info li:hover {
+            color: #e4e4e4; /* Primary text on hover */
+        }
+        
+        .file-info li strong {
+            color: #e4e4e4; /* Primary text */
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                padding: 30px 20px;
+            }
+            
+            .left-panel h1 {
+                font-size: 2rem;
+            }
+            
+            .right-panel {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="security-icon">📁</div>
+            <h1>File Upload</h1>
+            <p>Secure file upload system with comprehensive security scanning and monitoring capabilities.</p>
+        </div>
+        
+        <div class="right-panel">
+            <div class="upload-container">
+                <div class="upload-header">
+                    <h2>Upload File</h2>
+                    <p>Select a file to upload securely to the system</p>
+                </div>
+                
+                <div class="form-container">
+                    <form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required/>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="file">Select File</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg" required/>
+                                <div class="file-input-display">
+                                    <span class="file-icon">📎</span>
+                                    <span class="file-text">Choose a file or drag it here</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="upload-btn">
+                            Upload File
+                        </button>
+                    </form>
+                    
+                    <div th:if="${message}" class="message success" th:text="${message}"></div>
+                    <div th:if="${error}" class="message error" th:text="${error}"></div>
+                    
+                    <div class="file-info">
+                        <h3><span class="icon">📋</span>Upload Guidelines</h3>
+                        <ul>
+                            <li><strong>Allowed formats:</strong> PDF, JPEG images</li>
+                            <li><strong>Maximum size:</strong> 10 MB</li>
+                            <li><strong>Security:</strong> All uploads are scanned and logged</li>
+                            <li><strong>Privacy:</strong> Files are processed securely</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a th:href="@{/uploads}" class="nav-link">View All Uploads</a> |
+                        <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // File input display update
+        document.getElementById('file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const display = document.querySelector('.file-text');
+            if (file) {
+                display.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+                display.style.color = '#28a745';
+            } else {
+                display.textContent = 'Choose a file or drag it here';
+                display.style.color = '#6c757d';
+            }
+        });
+    </script>
+</body>
+</html>
+
+

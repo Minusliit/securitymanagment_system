@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Two-Factor Authentication - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Dark Theme CSS with Smooth Hover Animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a; /* Dark main background */
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e4e4; /* Primary text color */
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #121212; /* Dark container background */
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%); /* Dark gradient */
+            color: #ffffff; /* Primary text on dark background */
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        
+        .header h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .nav {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 20px 30px;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav a {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .nav a.logout {
+            background: #dc3545; /* Error red */
+        }
+        
+        .nav a.logout:hover {
+            background: #c82333;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        .nav .disabled {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #6c757d; /* Gray background for disabled */
+            color: #b0b0b0; /* Muted text color */
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            margin: 0 10px;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        
+        .nav .disabled:hover {
+            background: #6c757d; /* No change on hover */
+            transform: none; /* No lift effect */
+            box-shadow: none; /* No shadow */
+        }
+        
+        .content {
+            padding: 40px;
+            background: #121212; /* Dark container background */
+        }
+        
+        .user-info {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-left: 4px solid #60a5fa; /* Brand blue */
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .user-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .user-info h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .user-info h3:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .user-info p {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 1.1rem;
+        }
+        
+        .status-card {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .status-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .status-icon:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .status-icon.enabled {
+            color: #4ade80; /* Success green for dark theme */
+        }
+        
+        .status-icon.disabled {
+            color: #f87171; /* Error red for dark theme */
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+            color: #ffffff; /* Primary text */
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-title:hover {
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .status-description {
+            color: #b0b0b0; /* Secondary text */
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+        }
+        
+        .btn-success:hover {
+            background: #22c55e;
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.3);
+        }
+        
+        .btn-danger {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+        }
+        
+        .btn-danger:hover {
+            background: #ef4444;
+            box-shadow: 0 6px 20px rgba(248, 113, 113, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d; /* Secondary gray */
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        .setup-section {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .setup-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .setup-section h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .setup-section h3:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .setup-section h3 .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #2d2d2d; /* Dark secondary background */
+            border-radius: 15px;
+            border: 2px solid #60a5fa; /* Brand blue */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .qr-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .qr-code {
+            border: 3px solid #60a5fa; /* Brand blue */
+            border-radius: 15px;
+            padding: 20px;
+            background: #252525; /* Dark card background */
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .qr-code:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        
+        .qr-code img {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+        
+        .qr-code img:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .manual-setup {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #4ade80; /* Success green */
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .manual-setup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .manual-setup h4 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .manual-setup p {
+            color: #b0b0b0; /* Secondary text */
+            margin-bottom: 10px;
+        }
+        
+        .secret-key {
+            background: #252525; /* Dark card background */
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #e4e4e4; /* Primary text */
+            word-break: break-all;
+            margin: 10px 0;
+            border: 2px solid #3a3a3a; /* Dark border */
+            transition: all 0.3s ease;
+        }
+        
+        .secret-key:hover {
+            background: #2d2d2d; /* Slightly lighter on hover */
+            border-color: #60a5fa; /* Brand blue */
+        }
+        
+        .verification-form {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .verification-form:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .verification-form h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .verification-form h3:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .verification-form h3 .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e4e4e4; /* Primary text */
+            font-size: 1.1rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #3a3a3a; /* Dark border */
+            border-radius: 8px;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+            background: #2d2d2d; /* Dark input background */
+            color: #e4e4e4; /* Primary text */
+            cursor: pointer;
+        }
+        
+        .form-group input::placeholder {
+            color: #808080; /* Muted text for placeholders */
+        }
+        
+        .form-group input:hover {
+            border-color: #60a5fa; /* Brand blue for hover */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #60a5fa; /* Brand blue for focus */
+            background: #252525; /* Slightly lighter on focus */
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .message:hover {
+            transform: translateY(-2px);
+        }
+        
+        .message.success {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+            border: 1px solid #4ade80;
+        }
+        
+        .message.error {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+            border: 1px solid #f87171;
+        }
+        
+        .instructions {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #fbbf24; /* Warning yellow */
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .instructions:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .instructions h4 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .instructions ol {
+            color: #b0b0b0; /* Secondary text */
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            transition: color 0.2s ease;
+        }
+        
+        .instructions li:hover {
+            color: #e4e4e4; /* Primary text on hover */
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav a {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .qr-code img {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .secret-key {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Two-Factor Authentication</h1>
+            <p>Secure your account with an additional layer of protection</p>
+        </div>
+        
+        <nav class="nav">
+            <a th:href="@{/dashboard}" th:if="${!enabled or verified}" th:class="nav-link">🏠 Dashboard</a>
+            <span th:if="${enabled and !verified}" class="nav-link disabled" title="Complete 2FA verification to access Dashboard">🏠 Dashboard</span>
+            
+            <a th:href="@{/upload}" th:if="${!enabled or verified}" th:class="nav-link">📁 Upload File</a>
+            <span th:if="${enabled and !verified}" class="nav-link disabled" title="Complete 2FA verification to access Upload">📁 Upload File</span>
+            
+            <a th:href="@{/uploads}" th:if="${!enabled or verified}" th:class="nav-link">📋 View Uploads</a>
+            <span th:if="${enabled and !verified}" class="nav-link disabled" title="Complete 2FA verification to access Uploads">📋 View Uploads</span>
+            
+            <a th:href="@{/logout}" class="logout">🚪 Logout</a>
+        </nav>
+        
+        <div class="content">
+            <div th:if="${enabled and !verified}" class="message warning" style="margin-bottom: 30px;">
+                <h3>🔐 Secure Access Required</h3>
+                <p>You need 2FA verification to continue.</p>
+            </div>
+            
+            <div class="user-info">
+                <h3>👤 User Information</h3>
+                <p th:if="${username}">Logged in as <strong th:text="${username}">username</strong></p>
+            </div>
+            
+            <div class="status-card">
+                <div th:if="${enabled}" class="status-icon enabled">✅</div>
+                <div th:unless="${enabled}" class="status-icon disabled">❌</div>
+                <h2 class="status-title" th:text="${enabled ? 'Two Factor Authentication Enabled' : 'Two Factor Authentication Disabled'}">2FA Status</h2>
+                <p class="status-description" th:text="${enabled ? 'Your account is protected with two-factor authentication' : 'Enable two-factor authentication to secure your account'}">Status description</p>
+                
+                <div class="button-group" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                    <form th:action="@{/2fa/enable}" method="post" th:if="${!enabled}" style="margin: 0;">
+                        <button type="submit" class="btn btn-success">🔐 Enable 2FA</button>
+                    </form>
+                    <form th:action="@{/2fa/disable}" method="post" th:if="${enabled}" style="margin: 0;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to disable 2FA? This will make your account less secure.')">🔓 Disable 2FA</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Debug Information -->
+            <div style="background: #2d2d2d; padding: 15px; border-radius: 8px; margin: 20px 0; font-family: monospace; font-size: 0.9rem; color: #b0b0b0; border: 1px solid #3a3a3a; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                <strong style="color: #e4e4e4;">Debug Info:</strong><br/>
+                Username: <span th:text="${username}" style="color: #60a5fa;">null</span><br/>
+                Secret: <span th:text="${secret}" style="color: #60a5fa;">null</span><br/>
+                Enabled: <span th:text="${enabled}" style="color: #60a5fa;">null</span><br/>
+                OTPAUTH: <span th:text="${otpauth}" style="color: #60a5fa;">null</span>
+            </div>
+            
+            <div class="setup-section">
+                <h3><span class="icon">📱</span>Setup Instructions</h3>
+                
+                <div class="instructions">
+                    <h4>📋 How to Set Up 2FA</h4>
+                    <ol>
+                        <li>Install Google Authenticator or similar app on your phone</li>
+                        <li>Scan the QR code below or enter the secret key manually</li>
+                        <li>Enter the 6-digit code from your authenticator app</li>
+                        <li>Click "Verify" to complete the setup</li>
+                    </ol>
+                </div>
+                
+                <div class="qr-container">
+                    <h4>📱 Option 1: Scan QR Code</h4>
+                    <div class="qr-code">
+                        <div id="qr-loading" style="display: none; text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+                            <p>Loading QR Code...</p>
+                        </div>
+                        <img th:if="${secret}" 
+                             id="qr-image"
+                             th:src="@{/2fa/qr}" 
+                             alt="QR Code for 2FA Setup" 
+                             onload="hideLoading()"
+                             onerror="showError()"
+                             style="max-width: 100%; height: auto; display: none;" />
+                        <img th:unless="${secret}" 
+                             id="test-qr-image"
+                             th:src="@{/2fa/test-qr}" 
+                             alt="Test QR Code" 
+                             onload="hideLoading()"
+                             onerror="showError()"
+                             style="max-width: 100%; height: auto; display: none;" />
+                        <div id="qr-error" style="display: none; padding: 20px; background: #f8f9fa; border-radius: 10px; color: #6c757d; text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                            <p>QR Code could not be loaded. Please use the manual entry method below.</p>
+                            <button onclick="retryQRCode()" class="btn btn-secondary" style="margin-top: 10px; font-size: 0.9rem; padding: 8px 16px;">🔄 Retry</button>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; color: #6c757d; font-size: 0.9rem;">If QR code doesn't load, use manual entry below</p>
+                    <div style="margin-top: 10px;">
+                        <button th:if="${secret}" onclick="generateNewQRCode()" class="btn btn-secondary" style="font-size: 0.9rem; padding: 8px 16px;">🔄 Generate New QR Code</button>
+                    </div>
+    </div>
+    
+                <div class="manual-setup">
+                    <h4>⌨️ Option 2: Manual Entry</h4>
+                    <p><strong>Account name:</strong> <span th:text="${username}">username</span></p>
+                    <p><strong>Secret key:</strong></p>
+                    <div class="secret-key" th:text="${secret ?: 'No secret available - Enable 2FA first'}">SECRET_KEY_HERE</div>
+        <p><strong>Or scan this URL:</strong></p>
+                    <div class="secret-key" th:text="${otpauth ?: 'No OTPAUTH URL available - Enable 2FA first'}">OTPAUTH_URL_HERE</div>
+    </div>
+    </div>
+
+            <div class="verification-form">
+                <h3><span class="icon">🔢</span>Verify 2FA Code</h3>
+<form th:action="@{/2fa/verify}" method="post">
+                    <div class="form-group">
+                        <label for="code">Enter 6-digit code from your authenticator app</label>
+                        <input type="number" id="code" name="code" placeholder="123456" maxlength="6" required/>
+    </div>
+                    <button type="submit" class="btn">✅ Verify Code</button>
+    </form>
+            </div>
+            
+            <div th:if="${verified}" class="message success">
+                ✅ 2FA is verified for this session. Your account is now secure!
+            </div>
+            
+            <div th:if="${error}" class="message error" th:text="${error}"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-format the code input
+        document.getElementById('code').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            if (value.length > 6) {
+                value = value.substring(0, 6);
+            }
+            e.target.value = value;
+        });
+        
+        // Auto-submit when 6 digits are entered
+        document.getElementById('code').addEventListener('input', function(e) {
+            if (e.target.value.length === 6) {
+                setTimeout(() => {
+                    e.target.form.submit();
+                }, 500);
+            }
+        });
+        
+        // Helper functions for QR code states
+        function showLoading() {
+            document.getElementById('qr-loading').style.display = 'block';
+            document.getElementById('qr-error').style.display = 'none';
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) qrImage.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('qr-loading').style.display = 'none';
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) qrImage.style.display = 'block';
+        }
+        
+        function showError() {
+            document.getElementById('qr-loading').style.display = 'none';
+            document.getElementById('qr-error').style.display = 'block';
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) qrImage.style.display = 'none';
+        }
+        
+        function retryQRCode() {
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) {
+                showLoading();
+                const timestamp = new Date().getTime();
+                qrImage.src = qrImage.src.split('?')[0] + '?t=' + timestamp;
+            }
+        }
+        
+        // Generate new QR code function
+        function generateNewQRCode() {
+            if (confirm('This will generate a new QR code and secret key. You will need to update your authenticator app with the new code. Continue?')) {
+                // Show loading state
+                const loadingDiv = document.getElementById('qr-loading');
+                if (loadingDiv) {
+                    loadingDiv.innerHTML = '<div style="font-size: 2rem; margin-bottom: 10px;">⏳</div><p>Generating new QR code...</p>';
+                    loadingDiv.style.display = 'block';
+                }
+                
+                // Call the backend to regenerate 2FA
+                fetch('/2fa/regenerate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Show success message briefly before reload
+                        if (loadingDiv) {
+                            loadingDiv.innerHTML = '<div style="font-size: 2rem; margin-bottom: 10px; color: #28a745;">✅</div><p>New QR code generated successfully! Reloading...</p>';
+                        }
+                        // Reload the page to get the new QR code
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        throw new Error('Failed to generate new QR code');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError();
+                    alert('Failed to generate new QR code. Please try again.');
+                });
+            }
+        }
+        
+        // QR Code refresh function (for retry)
+        function refreshQRCode() {
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) {
+                showLoading();
+                const timestamp = new Date().getTime();
+                qrImage.src = qrImage.src.split('?')[0] + '?t=' + timestamp;
+            } else {
+                alert('QR code image not found. Please enable 2FA first.');
+            }
+        }
+        
+        
+        // Initialize QR code loading state
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage) {
+                showLoading();
+            }
+        });
+        
+        // Auto-refresh QR code every 30 seconds if it exists
+        setInterval(function() {
+            const qrImage = document.getElementById('qr-image');
+            if (qrImage && qrImage.offsetParent !== null) { // Only if visible
+                const timestamp = new Date().getTime();
+                qrImage.src = qrImage.src.split('?')[0] + '?t=' + timestamp;
+            }
+        }, 30000); // 30 seconds
+    </script>
+</body>
+</html>
+
+

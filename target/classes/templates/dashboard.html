@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Security Dashboard - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Dark Theme CSS with Smooth Hover Animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a; /* Dark main background */
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e4e4; /* Primary text color */
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #121212; /* Dark container background */
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%); /* Dark gradient */
+            color: #ffffff; /* Primary text on dark background */
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        
+        .header h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .nav {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 20px 30px;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .nav a {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .nav a.logout {
+            background: #dc3545; /* Error red */
+        }
+        
+        .nav a.logout:hover {
+            background: #c82333;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        .content {
+            padding: 30px;
+            background: #121212; /* Dark container background */
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: #252525; /* Dark card background */
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid #60a5fa; /* Brand blue border */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #3a3a3a; /* Dark border */
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .stat-card.login-attempts {
+            border-left-color: #4ade80; /* Success green */
+        }
+        
+        .stat-card.security-logs {
+            border-left-color: #fbbf24; /* Warning yellow */
+        }
+        
+        .stat-card.file-uploads {
+            border-left-color: #60a5fa; /* Brand blue */
+        }
+        
+        .stat-card.blocked-uploads {
+            border-left-color: #f87171; /* Error red */
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .stat-icon:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff; /* Primary text */
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .section {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .section-header {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 20px 25px;
+            border-bottom: 2px solid #3a3a3a; /* Dark border */
+        }
+        
+        .section-header h3 {
+            color: #ffffff; /* Primary text */
+            margin: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .section-header h3:hover {
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .section-header h3 .icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+        }
+        
+        th {
+            background: #2d2d2d; /* Dark secondary background */
+            font-weight: 600;
+            color: #e4e4e4; /* Primary text */
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-success {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+        }
+        
+        .status-failed {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+        }
+        
+        .status-blocked {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+        }
+        
+        .status-allowed {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+        }
+        
+        .action-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #dc3545; /* Error red */
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .empty-state-icon:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .empty-state h4 {
+            margin-bottom: 10px;
+            color: #e4e4e4; /* Primary text */
+        }
+        
+        .file-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #e4e4e4; /* Primary text */
+            border: 1px solid #3a3a3a; /* Dark border */
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav a {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+            
+            .table-container {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Security Dashboard</h1>
+            <p>Monitor and manage security events across the system</p>
+        </div>
+        
+        <nav class="nav">
+            <a th:href="@{/upload}">📁 Upload File</a>
+            <a th:href="@{/uploads}">📋 View Uploads</a>
+            <a th:href="@{/2fa}">🔐 2FA Settings</a>
+            <a th:href="@{/logout}" class="logout">🚪 Logout</a>
+        </nav>
+        
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card login-attempts">
+                    <div class="stat-icon">🔐</div>
+                    <div class="stat-number" th:text="${loginAttempts.size()}">0</div>
+                    <div class="stat-label">Login Attempts</div>
+                </div>
+                <div class="stat-card security-logs">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-number" th:text="${securityLogs.size()}">0</div>
+                    <div class="stat-label">Security Logs</div>
+                </div>
+                <div class="stat-card file-uploads">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-number" th:text="${uploads.size()}">0</div>
+                    <div class="stat-label">File Uploads</div>
+                </div>
+                <div class="stat-card blocked-uploads">
+                    <div class="stat-icon">🚫</div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Blocked Uploads</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="icon">🔐</span>Recent Login Attempts</h3>
+                </div>
+                <div class="table-container">
+                    <table th:if="${!loginAttempts.empty}">
+                        <thead>
+                            <tr>
+                                <th>👤 User</th>
+                                <th>✅ Status</th>
+                                <th>🌐 IP Address</th>
+                                <th>⏰ Time</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="a : ${loginAttempts}">
+                                <td th:text="${a.username}">user123</td>
+                                <td>
+                                    <span th:if="${a.success}" class="status-badge status-success">✅ Success</span>
+                                    <span th:unless="${a.success}" class="status-badge status-failed">❌ Failed</span>
+                                </td>
+                                <td><span class="ip-address" th:text="${a.ipAddress}">192.168.1.1</span></td>
+                                <td th:text="${#temporals.format(a.timestamp, 'MMM dd, HH:mm')}">Jan 15, 14:30</td>
+                                <td>
+                                    <form th:action="@{/security/login-attempts/{id}/delete(id=${a.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="action-btn">🗑️ Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${loginAttempts.empty}" class="empty-state">
+                        <div class="empty-state-icon">🔐</div>
+                        <h4>No login attempts found</h4>
+                        <p>Login attempts will appear here when users access the system</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="icon">📊</span>Security Logs</h3>
+                </div>
+                <div class="table-container">
+                    <table th:if="${!securityLogs.empty}">
+                        <thead>
+                            <tr>
+                                <th>🏷️ Type</th>
+                                <th>📝 Message</th>
+                                <th>⏰ Time</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="l : ${securityLogs}">
+                                <td th:text="${l.eventType}">EVENT_TYPE</td>
+                                <td th:text="${l.message}">Log message</td>
+                                <td th:text="${#temporals.format(l.timestamp, 'MMM dd, HH:mm')}">Jan 15, 14:30</td>
+                                <td>
+                                    <form th:action="@{/security/security-logs/{id}/delete(id=${l.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="action-btn">🗑️ Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${securityLogs.empty}" class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <h4>No security logs found</h4>
+                        <p>Security events will be logged here automatically</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-header">
+                    <h3><span class="icon">📁</span>File Uploads</h3>
+                </div>
+                <div class="table-container">
+                    <table th:if="${!uploads.empty}">
+                        <thead>
+                            <tr>
+                                <th>👤 User</th>
+                                <th>📄 File</th>
+                                <th>🏷️ Type</th>
+                                <th>📏 Size</th>
+                                <th>📊 Status</th>
+                                <th>⏰ Time</th>
+                                <th>⚙️ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${uploads}">
+                                <td th:text="${u.username}">user123</td>
+                                <td>
+                                    <span class="file-icon">📎</span>
+                                    <span th:text="${u.originalFilename}">file.pdf</span>
+                                </td>
+                                <td th:text="${u.contentType}">application/pdf</td>
+                                <td th:text="${#numbers.formatDecimal(u.sizeBytes / 1024.0, 1, 2)} + ' KB'">1.5 KB</td>
+                                <td>
+                                    <span th:if="${u.blocked}" class="status-badge status-blocked">🚫 Blocked</span>
+                                    <span th:unless="${u.blocked}" class="status-badge status-allowed">✅ Allowed</span>
+                                </td>
+                                <td th:text="${#temporals.format(u.timestamp, 'MMM dd, HH:mm')}">Jan 15, 14:30</td>
+                                <td>
+                                    <form th:action="@{/security/uploads/{id}/delete(id=${u.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="action-btn">🗑️ Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${uploads.empty}" class="empty-state">
+                        <div class="empty-state-icon">📁</div>
+                        <h4>No file uploads found</h4>
+                        <p>File uploads will appear here when users upload files</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

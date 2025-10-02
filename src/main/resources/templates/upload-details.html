@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Upload Details - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Dark Theme CSS with Smooth Hover Animations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a; /* Dark main background */
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e4e4; /* Primary text color */
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #121212; /* Dark container background */
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%); /* Dark gradient */
+            color: #ffffff; /* Primary text on dark background */
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            transition: all 0.3s ease;
+        }
+        
+        .header h1:hover {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+            color: #b0b0b0; /* Secondary text */
+        }
+        
+        .content {
+            padding: 40px;
+            background: #121212; /* Dark container background */
+        }
+        
+        .error {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f87171;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .error:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
+        }
+        
+        .upload-card {
+            background: #252525; /* Dark card background */
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .upload-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        
+        .upload-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3a3a3a; /* Dark border */
+        }
+        
+        .file-icon-large {
+            font-size: 3rem;
+            margin-right: 20px;
+            color: #60a5fa; /* Brand blue */
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .file-icon-large:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .upload-title {
+            flex: 1;
+        }
+        
+        .upload-title h2 {
+            color: #ffffff; /* Primary text */
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-title h2:hover {
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .upload-title p {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 1.1rem;
+        }
+        
+        .status-badge-large {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-badge-large:hover {
+            transform: scale(1.05);
+        }
+        
+        .status-blocked {
+            background: #f87171; /* Error red for dark theme */
+            color: #ffffff;
+        }
+        
+        .status-allowed {
+            background: #4ade80; /* Success green for dark theme */
+            color: #000000;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .detail-section {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .detail-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .detail-section h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .detail-section h3:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .detail-section h3 .icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+            transition: all 0.2s ease;
+        }
+        
+        .detail-item:hover {
+            background: #252525; /* Slightly lighter on hover */
+            margin: 0 -10px;
+            padding: 12px 10px;
+            border-radius: 5px;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #b0b0b0; /* Secondary text */
+            font-size: 0.95rem;
+        }
+        
+        .detail-value {
+            color: #e4e4e4; /* Primary text */
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .file-preview {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .file-preview:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .file-preview-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: #60a5fa; /* Brand blue */
+            transition: transform 0.4s ease, filter 0.4s ease;
+            cursor: pointer;
+        }
+        
+        .file-preview-icon:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .file-preview h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 10px;
+        }
+        
+        .file-preview p {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 0.95rem;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #007bff; /* Brand blue */
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d; /* Secondary gray */
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #60a5fa; /* Brand blue */
+            border-color: #60a5fa;
+        }
+        
+        .btn-outline:hover {
+            background: #60a5fa;
+            color: white;
+            box-shadow: 0 6px 20px rgba(96, 165, 250, 0.3);
+        }
+        
+        .timeline {
+            background: #2d2d2d; /* Dark secondary background */
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid #3a3a3a; /* Dark border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .timeline:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .timeline h3 {
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline h3:hover {
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .timeline h3 .icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #3a3a3a; /* Dark border */
+            transition: all 0.2s ease;
+        }
+        
+        .timeline-item:hover {
+            background: #252525; /* Slightly lighter on hover */
+            margin: 0 -10px;
+            padding: 15px 10px;
+            border-radius: 5px;
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #60a5fa; /* Brand blue */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .timeline-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: #e4e4e4; /* Primary text */
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            color: #b0b0b0; /* Secondary text */
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .upload-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .file-icon-large {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Upload Details</h1>
+            <p>Detailed information about the file upload</p>
+        </div>
+        
+        <div class="content">
+            <div th:if="${error}" class="error">
+                <h3>❌ Error</h3>
+                <p th:text="${error}"></p>
+                <p><strong>Debug Info:</strong></p>
+                <ul>
+                    <li>Requested ID: <span th:text="${param.id}">N/A</span></li>
+                    <li>Current Time: <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">N/A</span></li>
+                </ul>
+            </div>
+            
+            <div th:if="${upload}" class="upload-card">
+                <div class="upload-header">
+                    <div class="file-icon-large">📎</div>
+                    <div class="upload-title">
+                        <h2 th:text="${upload.originalFilename}">File Name</h2>
+                        <p>Uploaded by <span th:text="${upload.username}">username</span></p>
+                    </div>
+                    <div>
+                        <span th:if="${upload.blocked}" class="status-badge-large status-blocked">🚫 Blocked</span>
+                        <span th:unless="${upload.blocked}" class="status-badge-large status-allowed">✅ Allowed</span>
+                    </div>
+                </div>
+                
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h3><span class="icon">📊</span>File Information</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">File ID</span>
+                            <span class="detail-value" th:text="${upload.id}">#123</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Original Filename</span>
+                            <span class="detail-value" th:text="${upload.originalFilename}">file.pdf</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Content Type</span>
+                            <span class="detail-value" th:text="${upload.contentType}">application/pdf</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">File Size</span>
+                            <span class="detail-value" th:text="${#numbers.formatDecimal(upload.sizeBytes / 1024.0, 1, 2)} + ' KB'">1.5 KB</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3><span class="icon">👤</span>User Information</h3>
+                        <div class="detail-item">
+                            <span class="detail-label">Username</span>
+                            <span class="detail-value" th:text="${upload.username}">user123</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Upload Status</span>
+                            <span class="detail-value">
+                                <span th:if="${upload.blocked}" style="color: #dc3545; font-weight: 600;">Blocked</span>
+                                <span th:unless="${upload.blocked}" style="color: #28a745; font-weight: 600;">Allowed</span>
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Upload Time</span>
+                            <span class="detail-value" th:text="${#temporals.format(upload.timestamp, 'MMM dd, yyyy HH:mm:ss')}">Jan 15, 2024 14:30:25</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="file-preview">
+                    <div class="file-preview-icon">📄</div>
+                    <h3 th:text="${upload.originalFilename}">File Preview</h3>
+                    <p th:text="${upload.contentType}">Content type information</p>
+                </div>
+                
+            </div>
+            
+            <div class="actions">
+                <a th:href="@{/uploads}" class="btn btn-outline">← Back to Uploads</a>
+                <a th:href="@{/upload}" class="btn">📁 Upload New File</a>
+                <form th:if="${upload}" th:action="@{/uploads/{id}/delete(id=${upload.id})}" method="post" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this file? This action cannot be undone.')">
+                    <button type="submit" class="btn btn-danger">🗑️ Delete File</button>
+                </form>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">🏠 Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

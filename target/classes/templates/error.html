@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error - Security Management System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dc3545;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .error-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .error-details h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .error-details p {
+            color: #6c757d;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1 class="error-title">Oops! Something went wrong</h1>
+        <p class="error-message">
+            We're sorry, but something unexpected happened. Our team has been notified and is working to fix the issue.
+        </p>
+        
+        <div class="error-details">
+            <h3>Error Details</h3>
+            <p><strong>Status:</strong> <span th:text="${status}">500</span></p>
+            <p><strong>Error:</strong> <span th:text="${error}">Internal Server Error</span></p>
+            <p><strong>Message:</strong> <span th:text="${message}">An unexpected error occurred</span></p>
+            <p><strong>Path:</strong> <span th:text="${path}">/</span></p>
+            <p><strong>Timestamp:</strong> <span th:text="${timestamp}">Wed Oct 01 18:53:48 IST 2025</span></p>
+        </div>
+        
+        <div class="actions">
+            <a th:href="@{/dashboard}" class="btn">🏠 Go to Dashboard</a>
+            <a th:href="@{/}" class="btn btn-secondary">🔄 Try Again</a>
+        </div>
+    </div>
+</body>
+</html>
